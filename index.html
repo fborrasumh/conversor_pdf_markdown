@@ -424,8 +424,12 @@ async function getPageLines(page, viewport){
     if (!it.str || !it.str.trim()) continue;
     const tx = pdfjsLib.Util.transform(viewport.transform, it.transform);
     const size = Math.hypot(tx[2], tx[3]);
-    const scaleX = Math.hypot(tx[0], tx[1]);
-    enriched.push({ str: it.str, size, x: tx[4], y: tx[5], width: it.width * scaleX });
+    // it.width ya está en unidades de página (incluye el tamaño de fuente del propio
+    // fragmento); solo hay que aplicarle el zoom del viewport, no la matriz completa
+    // del fragmento — multiplicar por esta última duplicaba el escalado y disparaba
+    // el ancho, haciendo que el final de cada palabra pareciera mucho más allá de
+    // donde estaba realmente y "comiéndose" el espacio con la siguiente.
+    enriched.push({ str: it.str, size, x: tx[4], y: tx[5], width: it.width * viewport.scale });
   }
   enriched.sort((a, b) => (a.y - b.y) || (a.x - b.x));
 
