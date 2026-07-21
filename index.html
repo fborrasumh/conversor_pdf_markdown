@@ -444,11 +444,11 @@ async function getPageLines(page, viewport){
     line.items.sort((a, b) => a.x - b.x);
     let text = '', lastEnd = null;
     for (const it of line.items){
-      if (lastEnd !== null && it.x - lastEnd > it.size * 0.28) text += ' ';
+      if (lastEnd !== null && it.x - lastEnd > it.size * 0.045) text += ' ';
       text += it.str;
       lastEnd = it.x + it.width;
     }
-    line.text = text.trim();
+    line.text = text.replace(/[ \t]+/g, ' ').trim();
   }
   return lines.filter(l => l.text);
 }
@@ -512,7 +512,7 @@ function detectTables(lines, bodySize){
       if (lastEnd !== null && it.x - lastEnd > gapThreshold){
         segments.push({ x: curX, text: curText.trim() });
         curText = ''; curX = it.x;
-      } else if (lastEnd !== null && it.x - lastEnd > it.size * 0.28){
+      } else if (lastEnd !== null && it.x - lastEnd > it.size * 0.045){
         curText += ' ';
       }
       curText += it.str;
